@@ -2,6 +2,9 @@ package imgtit
 
 import (
     "os";
+    "io/ioutil";
+    "fmt";
+    "log";
     "image";
     "image/color";
 )
@@ -53,7 +56,49 @@ func isFile(path string) bool {
     return fi.Mode().IsRegular();
 }
 
-func Run(opts Options) (bool, error) {
+/* Return true if path does not exist
+*/
+func fileExists(path string) bool {
+    var _, err = os.Open(path);
+    if err != nil{
+        return false;
+    }
+    return true;
+}
+
+/* Run pre-processing checks on provided options
+*/
+func runChecks(opts Options) (error){
     // check if InputDir exists and is directory
+    if (opts.InputDir == "") {
+        return fmt.Errorf("Empty InputDir path");
+    }
+    if (!isDir(opts.InputDir)) {
+        return fmt.Errorf("Path for InputDir %v is not a dir", opts.InputDir);
+    }
+    // check if InputFile exists
+    if (!isFile(opts.InputFile)) {
+        return fmt.Errorf("Path for InputFile %v is not a file", opts.InputFile);
+    }
+    if (fileExists(opts.OutputFile)){
+        return fmt.Errorf("Path for OutputFile %v exists.", opts.InputDir);
+    }
+    return nil;
+
+}
+
+func Run(opts Options) (bool, error) {
+    var checks = runChecks(opts);
+    if (checks != nil){
+        return false, checks;
+    }
+    var inputDirContents, errd = ioutil.ReadDir(opts.InputDir);
+    if (errd != nil){
+        return false, errd;
+    }
+    for dirIdx := range inputDirContents {
+        var dirItem = inputDirContents[dirIdx];
+        log.Println("Processing %v item in %v dir", dirItem.Name(), opts.InputDir);
+    }
     return true, nil;
 };

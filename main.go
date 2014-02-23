@@ -1,9 +1,15 @@
 package main
 
-import "./imgtit"
+import (
+    "./imgtit";
+    "fmt";
+)
 
 
 func main(){
     var opts = imgtit.ParseArgs();
-    imgtit.Run(opts);
+    var _, err = imgtit.Run(opts);
+    if (err != nil){
+        fmt.Println("Error while processing", opts, err);
+    }
 }
