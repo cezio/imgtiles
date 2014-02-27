@@ -6,23 +6,22 @@ import (
     "io/ioutil";
     "fmt";
     "log";
-    "image";
-    "image/color";
+    "github.com/rainycape/magick";
     "container/list";
 )
 
 type TileImg struct {
     // processed, shrinked image
-    Image *image.Image;
+    Image *magick.Image;
     // average color from image
-    Color *color.Color;
+    Color *magick.Pixel;
 }
 
 type DestinationImgParams struct {
 
     // destination image
-    Img image.Image
-    Src image.Image
+    Img *magick.Image
+    Src *magick.Image
 
     // tile size
     TileSizeW int
@@ -113,7 +112,7 @@ func Run(opts *Options) (bool, error) {
         if (!isFile(dirPath)){
             continue;
         }
-        log.Println("Processing %v item", dirPath);
+        log.Printf("Processing %v item\n", dirPath);
         var f, errf = os.Open(dirPath);
         if (errf != nil){
             log.Println("Cannot process %v item: %v", dirPath, errf);

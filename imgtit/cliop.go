@@ -17,8 +17,8 @@ type Options struct {
 
 
 
-func ParseArgs() Options {
-    var opts = Options{};
+func ParseArgs() *Options {
+    var opts = new(Options);
 
     flag.StringVar(&opts.InputDir, "dir", ".", "Directory with source images");
     flag.StringVar(&opts.InputFile, "in", "", "Input file");

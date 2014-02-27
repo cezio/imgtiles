@@ -3,8 +3,6 @@ package imgtit
 import (
     "os";
     "log";
-    "image";
-    "image/color";
     "github.com/rainycape/magick";
 )
 
@@ -28,7 +26,7 @@ func analyzeInputFile(f *os.File, opts *Options) (*TileImg) {
 
 /* Return thumbnail from image and average color
 */
-func processInputImage(img *image.Image, opts *Options) (*image.Image, *color.Color){
+func processInputImage(img *magick.Image, opts *Options) (*magick.Image, *magick.Pixel){
     var out, err = img.Scale(opts.TileWidth, opts.TileHeight);
     if (err != nil){
         log.Println("Cannot scale %v: %v", img, err);
@@ -36,9 +34,9 @@ func processInputImage(img *image.Image, opts *Options) (*image.Image, *color.Co
     }
     var px, errp = out.AverageColor();
     if (errp != nil){
-        log.Println("Cannot sample average color %v: %v", img, errp); 
+        log.Println("Cannot sample average color %v: %v", img, errp);
         return nil, nil;
     }
-    return out, px;
+    return out, (*magick.Pixel)(px);
 }
 
