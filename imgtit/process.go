@@ -3,6 +3,7 @@ package imgtit
 import (
     "os";
     "log";
+    "math";
     "github.com/rainycape/magick";
 )
 
@@ -27,11 +28,18 @@ func analyzeInputFile(f *os.File, opts *Options) (*TileImg) {
 /* Return thumbnail from image and average color
 */
 func processInputImage(img *magick.Image, opts *Options) (*magick.Image, *magick.Pixel){
-    var out, err = img.Scale(opts.TileWidth, opts.TileHeight);
-    if (err != nil){
-        log.Println("Cannot scale %v: %v", img, err);
-        return nil, nil;
+    var out *magick.Image;
+    var err error;
+    if (img.Width() != opts.TileWidth || img.Height() != opts.TileHeight){
+        out, err = img.Scale(opts.TileWidth, opts.TileHeight);
+        if (err != nil){
+            log.Println("Cannot scale %v: %v", img, err);
+            return nil, nil;
+        }
+    } else {
+        out = img;
     }
+
     var px, errp = out.AverageColor();
     if (errp != nil){
         log.Println("Cannot sample average color %v: %v", img, errp);
@@ -40,3 +48,25 @@ func processInputImage(img *magick.Image, opts *Options) (*magick.Image, *magick
     return out, (*magick.Pixel)(px);
 }
 
+
+/*
+    Analyze input master file, extract tiles, and calculate average color for each tile
+    Return array of parsed tiles
+*/
+func analyzeMasterInputFile(f *os.File, opts *Options) (*[]TileImg){
+    var img, err = magick.Decode(f);
+    if (err != nil){
+        log.Println("Cannot process %v: %v", f.Name(), err)
+        return nil;
+    }
+    // get tile size
+    var w, h = opts.TileWidth, opts.TileHeight;
+
+    // store tiles per width and height
+    var wx = math.Ceil(img.Width()/w);
+    var hx = math.Ceil(img.Height()/h);
+
+    // for each tile, create a rect, and crop it, then process
+
+
+}

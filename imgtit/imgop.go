@@ -17,18 +17,17 @@ type TileImg struct {
     Color *magick.Pixel;
 }
 
-type DestinationImgParams struct {
+type ProcessedImage struct {
+    In *magick.Image;
+    // output 
+    Out *magick.Image;
+    Px *[]magick.Pixel;
 
-    // destination image
-    Img *magick.Image
-    Src *magick.Image
-
-    // tile size
-    TileSizeW int
-    TileSizeH int
-    TileCount int
-
-};
+    TileWidth int;
+    TileHeight int;
+    TilesVertically int;
+    TilesHorizontally int;
+}
 
 /* Return true if provided path is a directory. Any other case or error will return false.
 */
@@ -96,12 +95,19 @@ func Run(opts *Options) (bool, error) {
     if (checks != nil){
         return false, checks;
     }
+
+    // analyze source image here, each tile is 1*row + col
+    var inImage = list.New();
+
+    
+
     // get list of files in dir
     var inputDirContents, errd = ioutil.ReadDir(opts.InputDir);
     if (errd != nil){
         return false, errd;
     }
 
+    // images that will be used as tiles
     var inImages = list.New();
 
     // list input dir and prepare image color matrix from available images
@@ -124,7 +130,7 @@ func Run(opts *Options) (bool, error) {
         }
         inImages.PushBack(img);
     }
-
+    log.Printf("Processed %v input files", inImages.Len());
 
     return true, nil;
 };
