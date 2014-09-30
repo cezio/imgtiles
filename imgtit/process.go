@@ -56,17 +56,18 @@ func processInputImage(img *magick.Image, opts *Options) (*magick.Image, *magick
 func analyzeMasterInputFile(f *os.File, opts *Options) (*[]TileImg){
     var img, err = magick.Decode(f);
     if (err != nil){
-        log.Println("Cannot process %v: %v", f.Name(), err)
+        log.Printf("Cannot process %v: %v\n", f.Name(), err)
         return nil;
     }
     // get tile size
     var w, h = opts.TileWidth, opts.TileHeight;
 
-    // store tiles per width and height
-    var wx = math.Ceil(img.Width()/w);
-    var hx = math.Ceil(img.Height()/h);
+    // store tiles per width and height, math.Ceil expects float, 
+    // but we need int in the end, thus conversions.
+    var wx = int(math.Ceil(float64(img.Width())/float64(w)));
+    var hx = int(math.Ceil(float64(img.Height())/float64(h)));
 
     // for each tile, create a rect, and crop it, then process
-
-
+    log.Printf("Img size: %vx%v, got tiles: %v in widht, %v in height\n", img.Width(), img.Height(), wx, hx);
+    return nil;
 }

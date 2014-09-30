@@ -97,9 +97,7 @@ func Run(opts *Options) (bool, error) {
     }
 
     // analyze source image here, each tile is 1*row + col
-    var inImage = list.New();
-
-    
+    //var inImage = list.New();
 
     // get list of files in dir
     var inputDirContents, errd = ioutil.ReadDir(opts.InputDir);
@@ -132,6 +130,13 @@ func Run(opts *Options) (bool, error) {
     }
     log.Printf("Processed %v input files", inImages.Len());
 
+    var inFile, errg = os.Open(opts.InputFile);
+    if (errg != nil){
+        log.Println("Cannot process %v item: %v", opts.InputFile, errg);
+        return false, errg;
+    }
+
+    var _= analyzeMasterInputFile(inFile, opts);
     return true, nil;
 };
 
