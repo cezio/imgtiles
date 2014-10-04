@@ -7,14 +7,25 @@ import (
     "fmt";
     "log";
     "github.com/rainycape/magick";
-    "container/list";
 )
+
+type TilePosition struct {
+    // Frame information
+    // x/y offset from 0,0 in px
+    Xoffset int;
+    Yoffset int;
+    // x/y offset in tiles count
+    XTile int;
+    YTile int;
+
+}
 
 type TileImg struct {
     // processed, shrinked image
     Image *magick.Image;
     // average color from image
     Color *magick.Pixel;
+    Position *TilePosition;
 }
 
 type ProcessedImage struct {
@@ -96,9 +107,6 @@ func Run(opts *Options) (bool, error) {
         return false, checks;
     }
 
-    // analyze source image here, each tile is 1*row + col
-    //var inImage = list.New();
-
     // get list of files in dir
     var inputDirContents, errd = ioutil.ReadDir(opts.InputDir);
     if (errd != nil){
@@ -106,7 +114,7 @@ func Run(opts *Options) (bool, error) {
     }
 
     // images that will be used as tiles
-    var inImages = list.New();
+    var inImages = make([]TileImg, 0);
 
     // list input dir and prepare image color matrix from available images
     for dirIdx := range inputDirContents {
@@ -126,9 +134,9 @@ func Run(opts *Options) (bool, error) {
         if (img == nil){
             continue;
         }
-        inImages.PushBack(img);
+        inImages = append(inImages, *img);
     }
-    log.Printf("Processed %v input files", inImages.Len());
+    log.Printf("Processed %v input files", len(inImages));
 
     var inFile, errg = os.Open(opts.InputFile);
     if (errg != nil){
@@ -136,7 +144,10 @@ func Run(opts *Options) (bool, error) {
         return false, errg;
     }
 
-    var _= analyzeMasterInputFile(inFile, opts);
+    var master = analyzeMasterInputFile(inFile, opts);
+    var _ = produceOutput(master, &inImages, opts);
+
     return true, nil;
 };
+
 
