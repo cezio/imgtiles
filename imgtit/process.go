@@ -95,12 +95,8 @@ func analyzeMasterInputFile(f *os.File, opts *Options) (*[]TileImg){
 /*
 
 */
-func produceOutput(master *[]TileImg, tiles *[]TileImg, opts *Options) (*magick.Image){
-    var out, ierr = magick.New(opts.OutputWidth, opts.OutputHeight);
-    if (ierr !=nil){
-        log.Printf("Cannot create new image: %v", ierr);
-        return nil;
-    }
+func produceOutput(master *[]TileImg, tiles *[]TileImg, opts *Options) (image.Image){
+    var out = image.NewRGBA(image.Rect(0, 0, opts.OutputWidth, opts.OutputHeight));
     // tolerance tresholds
     var tolerances = [5]float64{0.1, 0.2, 0.3, 0.4, 0.5}
     var tcolor *magick.Image;
@@ -127,25 +123,19 @@ func produceOutput(master *[]TileImg, tiles *[]TileImg, opts *Options) (*magick.
 /*
     AddImage modifies img and places nimg image starting from pos
 */
-func AddImage(img *magick.Image, pos *TilePosition, nimg *magick.Image) {
+func AddImage(inimg draw.Image, pos *TilePosition, _pimg *magick.Image) {
     if (pos == nil){
         return;
     }
-    var _inimg, inerr = img.GoImage();
-    if (inerr != nil){
-        log.Printf("Cannot extract GoImage from %v: %v", img, inerr);
-        return;
-    }
-    var _pimg, perr = nimg.GoImage();
+    var pimg, perr = _pimg.GoImage();
     if (perr != nil){
-        log.Printf("Cannot extract GoImage from %v: %v", nimg, perr);
+        log.Printf("Cannot extract GoImage from %v: %v", _pimg, perr);
         return;
     }
-    inimg := draw.Image{_inimg};
-    pimg := draw.Image{_pimg};
+
 
     nframe_min := image.Point{pos.Xoffset, pos.Yoffset};
-    nframe_max := image.Point{int(nimg.Rect().Width) + nframe_min.X, int(nimg.Rect().Height) + nframe_min.Y};
+    nframe_max := image.Point{int(inimg.Bounds().Max.X) + nframe_min.X, int(inimg.Bounds().Max.Y) + nframe_min.Y};
     nframe := image.Rectangle{nframe_min, nframe_max};
     draw.Draw(inimg, nframe, pimg, image.ZP, draw.Src);
 
@@ -165,7 +155,8 @@ func getTileFromColor(color *magick.Pixel, tiles *[]TileImg, tolerance float64) 
     }
     if (len(matched)>0){
         idx := getRandomItemIndex(len(matched));
-        return *tiles[matched[idx]];
+        var m = matched[idx];
+        return (*tiles)[m].Image;
     }
     return nil;
 

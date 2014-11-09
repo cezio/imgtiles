@@ -145,7 +145,12 @@ func Run(opts *Options) (bool, error) {
     }
 
     var master = analyzeMasterInputFile(inFile, opts);
-    var _ = produceOutput(master, &inImages, opts);
+    var outdata = produceOutput(master, &inImages, opts);
+    if (outdata == nil){
+        log.Printf("No output file!!! dying!");
+        return false, nil;
+    }
+    writeFile(outdata, opts.OutputFile);
 
     return true, nil;
 };
