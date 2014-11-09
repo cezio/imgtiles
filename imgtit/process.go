@@ -98,23 +98,19 @@ func analyzeMasterInputFile(f *os.File, opts *Options) (*[]TileImg){
 func produceOutput(master *[]TileImg, tiles *[]TileImg, opts *Options) (image.Image){
     var out = image.NewRGBA(image.Rect(0, 0, opts.OutputWidth, opts.OutputHeight));
     // tolerance tresholds
-    var tolerances = [5]float64{0.1, 0.2, 0.3, 0.4, 0.5}
-    var tcolor *magick.Image;
-    for _, tile := range *master {
+    var tolerances = [8]float64{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}
+    for tile_r, tile := range *master {
         for _, tolerance := range tolerances {
             // gradually find matching tile
             tcolor := getTileFromColor(tile.Color, tiles, tolerance);
-                if (tcolor == nil){
-                    return nil;
-                }
-        }
-        /// aw, crap, no image!
-        if (tcolor == nil){
-            log.Printf("Couldn't find any matching tile for %v color", tile.Color);
-            return nil;
-        }
+            log.Printf("Get tile for %v (%v) tile, %v tolerance: %v", tile_r, tile.Color, tolerance, tcolor);
+            /// aw, crap, no image!
+            if (tcolor != nil){
+                AddImage(out, tile.Position, tcolor);
+                break;
+            }
 
-        AddImage(out, tile.Position, tcolor);
+        }
     }
     return out;
 }

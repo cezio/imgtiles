@@ -5,6 +5,7 @@ import (
     "log";
     "bufio";
     "image";
+    "image/jpeg";
     "math/rand";
     "github.com/rainycape/magick";
 )
@@ -42,13 +43,12 @@ func writeFile(indata image.Image, outpath string) (bool){
         return false;
     }
     var bwriter = bufio.NewWriter(f);
+    // use correct type
 
-    var info = image.NewInfo();
-    info.SetFormat("jpg");
-    info.SetQuality(100);
-    info.SetColorspace(image.RGB);
+    var opts = new(jpeg.Options)
+    opts.Quality = 100;
 
-    var ierr = indata.Encode(bwriter, info);
+    var ierr = jpeg.Encode(bwriter, indata, opts);
     if (ierr != nil){
         log.Printf("Cannot write to %v file: %v", outpath, ierr);
     }
