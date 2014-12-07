@@ -1,0 +1,4 @@
+[ ] mapa błędów/odchyleń od koloru
+[ ] wynikowa mapa kolorów mastera
+[ ] poprawić skalowanie wynikowego obrazka
+[ ] poprawić dobieranie kafelków - określ różnicę od wzorca, sortój po różnicy

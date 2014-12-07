@@ -94,7 +94,7 @@ func runChecks(opts *Options) (error){
         return fmt.Errorf("Path for InputFile %v is not a file", opts.InputFile);
     }
     // check if output fie exists - so we won't overwrite it.
-    if (fileExists(opts.OutputFile)){
+    if (!opts.OverwriteOutput && fileExists(opts.OutputFile)){
         return fmt.Errorf("Path for OutputFile %v exists.", opts.InputDir);
     }
     return nil;

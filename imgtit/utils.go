@@ -42,6 +42,11 @@ func writeFile(indata image.Image, outpath string) (bool){
         log.Printf("Cannot open %v for writing: %v", outpath, ferr);
         return false;
     }
+    var terr = f.Truncate(0);
+    if (terr != nil){
+        log.Printf("Cannot truncate %v: %v", outpath, terr);
+        return false;
+    }
     var bwriter = bufio.NewWriter(f);
     // use correct type
 

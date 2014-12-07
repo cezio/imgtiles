@@ -12,6 +12,9 @@ type Options struct {
 	InputDir     string //path to a directory with images for tiles
 	InputFile    string //path to a file with input file
 	OutputFile   string //path to resutl file to be created
+    ErrorsFile   string //path to result error image (gray-scale black-to-white map of distances from reference color to resulting color)
+    ColorMapFile string //path to analyzed color map (color image)
+    OverwriteOutput bool //allow to ovewrite output file, default no
 }
 
 func ParseArgs() *Options {
@@ -24,6 +27,9 @@ func ParseArgs() *Options {
 	flag.IntVar(&opts.OutputWidth, "width", 800, "Output width in px")
 	flag.IntVar(&opts.TileHeight, "tile_height", 12, "Height of a tile, in px")
 	flag.IntVar(&opts.TileWidth, "tile_width", 16, "Width of a tile, in px")
+    flag.StringVar(&opts.ErrorsFile, "error", "", "Error file")
+    flag.StringVar(&opts.ColorMapFile, "color_map", "", "Color map of master file")
+    flag.BoolVar(&opts.OverwriteOutput, "overwrite", false, "Allow to overwrite output file (default: no)")
 
 	flag.Parse()
 	return opts
