@@ -4,10 +4,26 @@ import (
     "os";
     "path";
     "io/ioutil";
-    "fmt";
     "log";
     "github.com/rainycape/magick";
 )
+
+/**
+    Keep pixel color difference with information on diff direction
+*/
+type Pixdiff struct {
+    R float64;
+    G float64;
+    B float64;
+    A float64;
+}
+
+type TileMatch struct {
+    Matched bool;
+    Difference *Pixdiff;
+    OrigColor *magick.Pixel;
+    MatchedColor *magick.Pixel;
+}
 
 type TilePosition struct {
     // Frame information
@@ -40,66 +56,6 @@ type ProcessedImage struct {
     TilesHorizontally int;
 }
 
-/* Return true if provided path is a directory. Any other case or error will return false.
-*/
-func isDir(path string) bool{
-    var f, err = os.Open(path);
-    if err != nil{
-        return false;
-    }
-    var fi,errf = f.Stat();
-    if errf != nil{
-        return false;
-    }
-    return fi.IsDir();
-
-}
-
-/* Return true if provided path is a regular file. Any other case or error will return false.
-*/
-func isFile(path string) bool {
-    var f, err = os.Open(path);
-    if err != nil{
-        return false;
-    }
-    var fi, errf = f.Stat();
-    if errf != nil{
-        return false;
-    }
-    return fi.Mode().IsRegular();
-}
-
-/* Return true if path does not exist
-*/
-func fileExists(path string) bool {
-    var _, err = os.Open(path);
-    if err != nil{
-        return false;
-    }
-    return true;
-}
-
-/* Run pre-processing checks on provided options
-*/
-func runChecks(opts *Options) (error){
-    // check if InputDir exists and is directory
-    if (opts.InputDir == "") {
-        return fmt.Errorf("Empty InputDir path");
-    }
-    if (!isDir(opts.InputDir)) {
-        return fmt.Errorf("Path for InputDir %v is not a dir", opts.InputDir);
-    }
-    // check if InputFile exists
-    if (!isFile(opts.InputFile)) {
-        return fmt.Errorf("Path for InputFile %v is not a file", opts.InputFile);
-    }
-    // check if output fie exists - so we won't overwrite it.
-    if (!opts.OverwriteOutput && fileExists(opts.OutputFile)){
-        return fmt.Errorf("Path for OutputFile %v exists.", opts.InputDir);
-    }
-    return nil;
-
-}
 
 func Run(opts *Options) (bool, error) {
     var checks = runChecks(opts);

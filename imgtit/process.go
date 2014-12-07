@@ -145,7 +145,8 @@ func getTileFromColor(color *magick.Pixel, tiles *[]TileImg, tolerance float64) 
     var matched = make([]int, 0);
     // compare color pixel with tolerance
     for idx, tile := range *tiles {
-        if (matchedPixels(color, tile.Color, tolerance)){
+        var _matched = matchedPixels(color, tile.Color, tolerance);
+        if (_matched.Matched) {
             matched = append(matched, idx);
         }
     }
