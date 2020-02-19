@@ -1,6 +1,6 @@
 package main
 
-import "imgtiles"
+import "./imgtiles"
 
 func main() {
 	return imgtiles.Main()
